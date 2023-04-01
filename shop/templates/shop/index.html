@@ -1,0 +1,158 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecom</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <script
+    src="https://code.jquery.com/jquery-3.6.3.js"
+    integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
+    crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{% static 'shop/style.css' %}">
+
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">Navbar</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNavDropdown">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Features</a>
+      </li>
+      <li class="nav-item">
+        <button id="cart" type="button" data-html="true" class="btn btn-secondary" data-container="body" data-toggle="popover" data-placement="bottom" data-content="Vivamus
+sagittis lacus vel augue laoreet rutrum faucibus.">
+  Cart(0)
+</button>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Dropdown link
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+          <a class="dropdown-item" href="#">Action</a>
+          <a class="dropdown-item" href="#">Another action</a>
+          <a class="dropdown-item" href="#">Something else here</a>
+        </div>
+      </li>
+    </ul>
+  </div>
+</nav>
+        </div>
+        </div>
+        <div class="row">
+            <form class="col-md-12">
+                <div class="card card-sm">
+                    <div class="card-body row no gutters align-items-center">
+                        <div class="col">
+                            <input type="search" name='item_name' placeholder="search product by its name">
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-success" type="submit">search</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="row">
+            {% for product in product_objects %}
+            <div class="col-md-3">
+                <div class="card">
+                    <img src="{{ product.image }}" alt="card-img-top">
+                    <div class="card-body">
+                        <div class="card-title" id="nm{{product.id}}" >{{product.title}}</div>
+                        <div id="price{{product.id}}" class="card-text">{{product.price}}
+                        </div>
+                        <a href="{{product.id}}" class="btn btn-warning">View</a>
+                        <button id="{{product.id}}" class="btn atc btn-warning">Add to cart</button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <ul class="pagination">
+                    {% if product_objects.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ product_objects.previous_page_number }}">Previous</a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <a class="page-link" href="?page={{ product_objects.number }}">Current</a>
+                    </li>
+                    {% if product_objects.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ product_objects.next_page_number }}">Next</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+   // console.log('This is Working');
+    if(localStorage.getItem('cart')==null){
+        var cart={};
+    }
+    else{
+        cart=JSON.parse(localStorage.getItem('cart'));
+    }
+    $(document).on('click','.atc',function(){
+        var item_id=this.id.toString();
+        if(cart[item_id]!=undefined){
+            quantity=cart[item_id][0]+1;
+            cart[item_id][0]=quantity;
+            cart[item_id][2]=cart[item_id][2]+parseFloat(document.getElementById("price"+item_id).innerHTML);
+        }
+        else{
+            quantity=1;
+            preice=parseFloat(document.getElementById("price"+item_id).innerHTML);
+            name=document.getElementById("nm"+item_id).innerHTML;
+            cart[item_id]=[quantity,name,preice];
+        }
+        console.log(cart);
+        localStorage.setItem('cart',JSON.stringify(cart));
+        var v=document.getElementById("cart");
+        v.innerHTML="Cart("+Object.keys(cart).length+")";
+    });
+
+//     $(function () {
+//   $('[data-toggle="popover"]').popover();
+//   document.getElementById("cart").setAttribute('data-content','<h5>This is your cart</h5>');
+// });
+    DisplayCart(cart);
+    function DisplayCart(cart){
+        carString="";
+        var carIndx=1;
+        let cartobject=JSON.parse(localStorage.getItem('cart'))
+        for(var x in cartobject){
+            carString+=carIndx+":";
+            //carString+=document.getElementById("nm"+x).innerHTML+", Qty:"+cart[x][0]+"</br>";
+            carString+=cartobject[x][1]+" Qty:"+cartobject[x][0]+"</br>";
+            carIndx+=1;
+        }
+       carString+="<a href='/checkout'><button class='btn btn-warning' id='checkout'>Check Out</button></a>";
+       document.getElementById("cart").setAttribute('data-content',carString); 
+       $('[data-toggle="popover"]').popover();
+    }
+</script>
+
+</html>
