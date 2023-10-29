@@ -1,6 +1,7 @@
 from django.shortcuts import render
-from .models import Products,Order
+from .models import Products,Order,User
 from django.core.paginator import Paginator
+from django.contrib.auth.hashers import make_password
 # Create your views here.
 def index(request):
     product_objects=Products.objects.all()
@@ -36,3 +37,19 @@ def checkout(request):
         order.save()
         return render(request,'shop/orderplaced.html')
     return render(request,'shop/checkout.html')
+
+def registorUser(request):
+    if request.method=="POST":
+        rq=request.POST
+        name=rq.get("name","")
+        email=rq.get("email",'')
+        mobile=rq.get("mobile","")
+        pass1=rq.get("pass1","")
+        pass1=make_password(pass1)
+        user=User(name=name,mobile=mobile,email=email,password=pass1)
+        user.save()
+        return render(request,'shop/login.html')
+    return render(request,'shop/userRegistor.html')
+
+def login(request):
+    return render(request,'shop/login.html')
